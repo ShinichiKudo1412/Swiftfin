@@ -144,6 +144,9 @@ struct MainTabView: View {
             .background(alignment: .top) {
                 FocusedPosterCinematicBackgroundView()
             }
+            .overlay(alignment: .topTrailing) {
+                ClockOverlay()
+            }
             .task {
                 // Wait so the Top Shelf downloads don't compete with the first screen loading
                 try? await Task.sleep(for: .seconds(15))

@@ -52,6 +52,8 @@ struct DefaultContentGroupProvider: ContentGroupProvider {
         )
 
         cinematicSelectionContentGroup
+
+        WeatherGroup()
         #else
         PosterGroup(
             library: ResumeItemsLibrary(mediaTypes: [.video]),

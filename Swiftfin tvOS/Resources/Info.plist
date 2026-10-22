@@ -32,6 +32,8 @@
 	<string>$(CURRENT_PROJECT_VERSION)</string>
 	<key>CFBundledisplayTitle</key>
 	<string>Kalifin</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Se usa tu ubicación aproximada para mostrar el clima en el inicio.</string>
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
 		<string>youtube</string>
