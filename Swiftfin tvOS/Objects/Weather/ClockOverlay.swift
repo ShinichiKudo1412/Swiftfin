@@ -20,8 +20,9 @@ struct ClockOverlay: View {
                 .foregroundStyle(.white)
                 .shadow(color: .black.opacity(0.6), radius: 6, y: 2)
         }
-        .padding(.top, 44)
-        .padding(.trailing, 90)
+        // Sits in the real screen corner, outside the safe area, clear of the tab bar
+        .padding(.top, 28)
+        .padding(.trailing, 56)
         .allowsHitTesting(false)
         .accessibilityHidden(true)
     }

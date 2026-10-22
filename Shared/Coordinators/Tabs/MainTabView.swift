@@ -146,6 +146,7 @@ struct MainTabView: View {
             }
             .overlay(alignment: .topTrailing) {
                 ClockOverlay()
+                    .ignoresSafeArea()
             }
             .task {
                 // Wait so the Top Shelf downloads don't compete with the first screen loading
