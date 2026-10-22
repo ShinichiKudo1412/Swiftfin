@@ -80,7 +80,10 @@ final class ContentGroupViewModel<Provider: ContentGroupProvider>: ViewModel {
         sinceLastDisappear interval: TimeInterval,
         staleThreshold: TimeInterval = 60
     ) {
-        guard interval > staleThreshold || needsGroupRebuild else { return }
+        // An empty result is never a valid steady state, so retry when coming back to it
+        let isEmpty = state == .content && groups.isEmpty
+
+        guard interval > staleThreshold || needsGroupRebuild || isEmpty else { return }
 
         background.refresh()
     }

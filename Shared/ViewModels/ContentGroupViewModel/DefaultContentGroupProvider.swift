@@ -61,57 +61,30 @@ struct DefaultContentGroupProvider: ContentGroupProvider {
         )
         #endif
 
-        PosterGroup(
-            library: NextUpLibrary()
-        )
-
-        if Defaults[.Customization.Home.showRecentlyAdded] {
-            #if os(tvOS)
-            CinematicRecentlyAddedContentGroup(
-                viewModel: cinematicSelectionContentGroup.viewModel
-            )
-            #else
-            PosterGroup(
-                library: ItemLibrary(
-                    parent: BaseItemDto(name: L10n.recentlyAdded.localizedCapitalized),
-                    filters: .init(
-                        itemTypes: [.movie, .series],
-                        sortBy: [.dateCreated],
-                        sortOrder: [.descending]
-                    )
-                )
-            )
-            #endif
-        }
-
-        if Defaults[.Customization.Home.showRecentlyPlayed] {
-            PosterGroup(
-                library: ItemLibrary(
-                    parent: BaseItemDto(name: L10n.recentlyPlayed.localizedCapitalized),
-                    filters: .init(
-                        itemTypes: [.movie, .series],
-                        sortBy: [.datePlayed],
-                        sortOrder: [.descending],
-                        traits: [.isPlayed]
-                    )
-                )
-            )
-        }
-
-        PosterGroup(
-            id: "programs-recommended",
-            library: RecommendedProgramsLibrary(),
-            posterDisplayType: .landscape,
-            posterSize: .small
-        )
-
+        // Content is grouped by library folder (Movies, Series, Anime, ...) instead of
+        // mixing everything into global "next up" / "recently added" rows.
         userViews
-            .map(LatestInLibrary.init)
-            .map {
-                PosterGroup(
-                    library: $0,
-                    posterDisplayType: .landscape
+            .flatMap { view -> [any ContentGroup] in
+                var groups: [any ContentGroup] = []
+
+                if view.collectionType == .tvshows {
+                    groups.append(
+                        PosterGroup(
+                            id: "next-up-\(view.id ?? "")",
+                            library: NextUpLibrary(library: view),
+                            posterDisplayType: .landscape
+                        )
+                    )
+                }
+
+                groups.append(
+                    PosterGroup(
+                        library: LatestInLibrary(library: view),
+                        posterDisplayType: .landscape
+                    )
                 )
+
+                return groups
             }
     }
 }

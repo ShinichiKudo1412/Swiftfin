@@ -16,9 +16,6 @@ extension SeriesEpisodeContentGroup {
         @Binding
         var selection: PagingLibraryViewModel<EpisodeLibrary>.ID?
 
-        @FocusState
-        private var focusedSeason: PagingLibraryViewModel<EpisodeLibrary>.ID?
-
         @Router
         private var router
 
@@ -60,47 +57,33 @@ extension SeriesEpisodeContentGroup {
         }
 
         var tvOSView: some View {
-            ScrollView(.horizontal) {
-                SelectionTrack(
-                    seasons,
-                    selection: selection,
-                    focus: $focusedSeason
-                ) { season in
-                    openEpisodes(for: season)
+            // One menu instead of a chip per season: long series (30+ seasons) stay reachable
+            HStack(spacing: 24) {
+                Menu {
+                    Picker(L10n.seasons, selection: $selection) {
+                        ForEach(seasons) { season in
+                            Text(season.library.parent.displayTitle)
+                                .tag(season.id)
+                        }
+                    }
+                } label: {
+                    Label(
+                        selectedSeason?.library.parent.displayTitle ?? L10n.seasons,
+                        systemImage: "chevron.down"
+                    )
+                    .labelStyle(.titleAndIcon)
                 }
-                .controlSize(.large)
-                .edgePadding(.horizontal)
+
+                Button(L10n.allEpisodes, systemImage: "list.bullet") {
+                    if let selectedSeason {
+                        openEpisodes(for: selectedSeason)
+                    }
+                }
+                .disabled(selectedSeason == nil)
             }
-            .scrollIndicators(.hidden)
-            .scrollClipDisabled()
+            .controlSize(.large)
+            .edgePadding(.horizontal)
             .focusSection()
-            .defaultFocus(
-                $focusedSeason,
-                preferredSelection,
-                priority: .userInitiated
-            )
-            .task(id: focusedSeason) {
-                await selectSeasonAfterFocusDebounce(focusedSeason)
-            }
-        }
-
-        private func selectSeasonAfterFocusDebounce(
-            _ seasonID: PagingLibraryViewModel<EpisodeLibrary>.ID?
-        ) async {
-            guard let seasonID, seasonID != selection else { return }
-
-            do {
-                try await Task.sleep(for: .milliseconds(350))
-            } catch {
-                return
-            }
-
-            guard seasonID == focusedSeason,
-                  seasonID != selection,
-                  seasons.contains(where: { $0.id == seasonID })
-            else { return }
-
-            selection = seasonID
         }
 
         var iOSView: some View {

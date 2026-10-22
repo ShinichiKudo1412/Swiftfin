@@ -39,18 +39,23 @@ struct MainTabView: View {
         #else
         TabCoordinator {
             TabItem.contentGroup(provider: DefaultContentGroupProvider())
-            TabItem.library(
-                title: L10n.tvShowsCapitalized,
-                systemName: "tv",
-                filters: .init(itemTypes: [.series])
-            )
+            TabItem.liveTV
             TabItem.library(
                 title: L10n.movies,
                 systemName: "film",
                 filters: .init(itemTypes: [.movie])
             )
+            TabItem.tvLibrary(
+                title: L10n.tvShowsCapitalized,
+                systemName: "tv",
+                anime: false
+            )
+            TabItem.tvLibrary(
+                title: "Anime",
+                systemName: "sparkles.tv",
+                anime: true
+            )
             TabItem.search
-            TabItem.media
             TabItem.settings
         }
         #endif
@@ -138,6 +143,14 @@ struct MainTabView: View {
             #if os(tvOS)
             .background(alignment: .top) {
                 FocusedPosterCinematicBackgroundView()
+            }
+            .task {
+                await TopShelfSnapshotWriter.refresh()
+            }
+            .onSceneWillEnterForeground {
+                Task {
+                    await TopShelfSnapshotWriter.refresh()
+                }
             }
             #endif
     }

@@ -12,6 +12,9 @@ import SwiftUI
 
 struct UserSessionRootView: View {
 
+    @Default(.accentColor)
+    private var accentColor
+
     @Environment(\.localUserAuthenticationAction)
     private var authenticationAction
 
@@ -33,10 +36,18 @@ struct UserSessionRootView: View {
                 PosterPreferencesEnvironment {
                     MainTabView()
                 }
-                .id(userSessionManager.currentSession?.user.id)
+                // Rebuild when the session object changes, not only the user, so screens never keep
+                // item records from a stopped session
+                .id(userSessionManager.currentSession.map(ObjectIdentifier.init))
             }
         }
         .animation(.linear(duration: 0.1), value: userSessionManager.state)
+        #if os(tvOS)
+        .background {
+            AccentNebulaBackground(accent: accentColor)
+        }
+        .tint(accentColor)
+        #endif
         .task {
             await userSessionManager.start()
         }

@@ -24,7 +24,23 @@ struct NextUpLibrary: BaseItemKindLibrary {
     }
 
     let libraryItemTypes: [BaseItemKind] = [.episode]
-    let parent: TitledLibraryParent = .init(displayTitle: L10n.nextUp, id: "next-up")
+    let parent: TitledLibraryParent
+
+    private let parentID: String?
+
+    /// Pass a library to restrict next up to that folder
+    init(library: BaseItemDto? = nil) {
+        if let library {
+            self.parent = .init(
+                displayTitle: "\(L10n.nextUp) · \(library.displayTitle)",
+                id: "next-up-\(library.id ?? "")"
+            )
+            self.parentID = library.id
+        } else {
+            self.parent = .init(displayTitle: L10n.nextUp, id: "next-up")
+            self.parentID = nil
+        }
+    }
 
     func shouldRefreshForUserDataChange(environment: Environment) -> Bool {
         true
@@ -39,6 +55,7 @@ struct NextUpLibrary: BaseItemKindLibrary {
         parameters.enableUserData = true
         parameters.fields = PosterSubtitleField.itemFields
         parameters.limit = pageState.pageSize
+        parameters.parentID = parentID
         parameters.startIndex = pageState.pageOffset
 
         if environment.maxNextUp > 0 {

@@ -12,6 +12,10 @@ import SwiftUI
 struct SwiftfinApp: App {
 
     init() {
+        // Personal fork: always use Spanish regardless of the Apple TV system language.
+        // Must run before any localized string is resolved.
+        UserDefaults.standard.set(["es"], forKey: "AppleLanguages")
+
         Self.configure()
 
         UINavigationBar.appearance().titleTextAttributes = [.foregroundColor: UIColor.label]
