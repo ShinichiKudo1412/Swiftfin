@@ -145,6 +145,8 @@ struct MainTabView: View {
                 FocusedPosterCinematicBackgroundView()
             }
             .task {
+                // Wait so the Top Shelf downloads don't compete with the first screen loading
+                try? await Task.sleep(for: .seconds(15))
                 await TopShelfSnapshotWriter.refresh()
             }
             .onSceneWillEnterForeground {
