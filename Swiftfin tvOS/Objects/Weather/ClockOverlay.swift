@@ -8,13 +8,19 @@
 
 import SwiftUI
 
-/// Current time shown in the top trailing corner.
+/// Current time (always 24 hour) shown in the top trailing corner.
 struct ClockOverlay: View {
+
+    private static let formatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        formatter.dateFormat = "HH:mm"
+        return formatter
+    }()
 
     var body: some View {
         TimelineView(.everyMinute) { context in
-            // Always 24 hour time, regardless of the Apple TV region
-            Text(context.date, format: .dateTime.hour(.twoDigits(amPM: .omitted)).minute(.twoDigits).locale(Locale(identifier: "en_GB")))
+            Text(Self.formatter.string(from: context.date))
                 .font(.title3)
                 .fontWeight(.semibold)
                 .monospacedDigit()
