@@ -13,16 +13,17 @@ struct ClockOverlay: View {
 
     var body: some View {
         TimelineView(.everyMinute) { context in
-            Text(context.date, format: .dateTime.hour().minute())
+            // Always 24 hour time, regardless of the Apple TV region
+            Text(context.date, format: .dateTime.hour(.twoDigits(amPM: .omitted)).minute(.twoDigits).locale(Locale(identifier: "en_GB")))
                 .font(.title3)
                 .fontWeight(.semibold)
                 .monospacedDigit()
                 .foregroundStyle(.white)
                 .shadow(color: .black.opacity(0.6), radius: 6, y: 2)
         }
-        // Sits in the real screen corner, outside the safe area, clear of the tab bar
-        .padding(.top, 28)
-        .padding(.trailing, 56)
+        // Right corner, outside the safe area, level with the tab bar
+        .padding(.top, 78)
+        .padding(.trailing, 30)
         .allowsHitTesting(false)
         .accessibilityHidden(true)
     }
